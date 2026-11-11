@@ -152,10 +152,8 @@ public class DictionaryApp {
     private void findSlang() throws IOException {
         String slang = ConsoleIO.nonemptyInput("Enter the slang word: ");
 
-        // Retrieve the definitions while measuring the time taken for the lookup.
-        long start = System.nanoTime();
+        // Retrieve the definitions for the slang
         List<String> definitions = dictionary.findSlang(slang);
-        double elapsed = TimeUtil.elapsedMillis(start);
 
         // Save the search history
         dictionary.saveHistory();
@@ -168,8 +166,6 @@ public class DictionaryApp {
             System.out.println("Slang word: " + dictionary.getOriginalKey(slang));
             ConsoleIO.outputDefinitions(definitions);
         }
-
-        System.out.printf("Search time: %.3f ms%n", elapsed);
     }
 
     /**
@@ -183,13 +179,11 @@ public class DictionaryApp {
     private void findSlangDefinitions() {
         String keyword = ConsoleIO.nonemptyInput("Enter the keyword in the definition: ");
 
-        // Measure the time taken to find matching slang entries.
-        long start = System.nanoTime();
+        // Find matching slang entries.
         List<String> definitions = dictionary.findSlangDefinitions(keyword);
-        double elapsed = TimeUtil.elapsedMillis(start);
 
-        // Display the number of results and the time taken for the search.
-        System.out.printf("Number of results: %d, search time: %.3f ms%n", definitions.size(), elapsed);
+        // Display the number of results found
+        System.out.printf("Number of results: %d", definitions.size());
 
         // Get the number of results to display, limited by the constant DISPLAY_LIMIT.
         int count = Math.min(definitions.size(), Const.DISPLAY_LIMIT);
