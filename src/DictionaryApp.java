@@ -8,6 +8,7 @@ import Module.SlangDictionary;
 
 import Helper.ConsoleIO;
 import Helper.TimeUtil;
+import Helper.SlangEntryParser;
 
 public class DictionaryApp {
 
@@ -313,8 +314,9 @@ public class DictionaryApp {
 
         // Prompt the user for new slang and meanings, allowing them to leave fields blank to retain current values.
         String newName = ConsoleIO.input("Enter new slang, or leave blank to keep the current: ").trim();
-        List<String> newDefinitions =
-            ConsoleIO.inputDefinitions("Enter new meanings, separated by | if more than one, or leave blank to keep the current: ");
+        String newDefinitionsString =
+            ConsoleIO.input("Enter new meanings, separated by | if more than one, or leave blank to keep the current: ");
+        List<String> newDefinitions = SlangEntryParser.splitDefinitions(newDefinitionsString);
 
 
         // If the user provides an empty list of definitions, treat it as a rename-only operation and retain the current meanings
