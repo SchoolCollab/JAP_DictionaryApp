@@ -129,6 +129,20 @@ public class SlangDictionary {
     }
 
     /**
+     * Returns the meanings stored for a slang key.
+     * <p>
+     * Trims the input and performs a case-insensitive map lookup. Does not
+     * record the query in history.
+     * </p>
+     *
+     * @param slang Slang key to find
+     * @return The stored meanings, or null when the key is absent
+     */
+    public List<String> getDefinitions(String slang) {
+        return dictionary.get(slang.trim());
+    }
+
+    /**
      * Searches for an exact slang key and records the query.
      * <p>
      * Trims the input, adds it to the front of the history even when no match
