@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import Data.Const.WriteMode;
+
 public class SlangDictionary {
 
     private final File originalFile;
@@ -168,6 +170,113 @@ public class SlangDictionary {
         }
 
         return results;
+    }
+
+    /**
+     * Adds a slang entry or updates an existing entry's meanings.
+     * <p>
+     * Copies the supplied meanings for a new entry or overwrite operation.
+     * Otherwise appends meanings that are not already in the stored list.
+     * </p>
+     *
+     * @param slang Slang key to add or update
+     * @param definitions Meanings supplied for the entry
+     * @param mode OVERWRITE to replace meanings, otherwise append distinct meanings
+     * @return The stored meanings after the operation
+     */
+    public List<String> addSlang(String slang, List<String> definitions, WriteMode mode) {
+        slang = slang.trim();
+
+        // Retrieve the current meanings for the key, if any.
+        List<String> currentDefinitions = dictionary.get(slang);
+
+        // Replace meanings for a new key or an explicit overwrite operation.
+        if (currentDefinitions == null || mode == WriteMode.OVERWRITE) {
+            dictionary.put(slang, new ArrayList<>(definitions));
+
+        } else {
+            // Append only definitions that are not already stored.
+            for (String def : definitions) {
+                if (!currentDefinitions.contains(def)) {
+                    currentDefinitions.add(def);
+                }
+            }
+        }
+
+        return dictionary.get(slang);
+    }
+
+    /**
+     * Edits an existing slang entry's key or meanings.
+     * <p>
+     * Keeps the old key when the replacement name is null or blank, and keeps
+     * its meanings when newDefinitions is null. Rejects a rename to another existing
+     * key before removing the original entry.
+     * </p>
+     *
+     * @param slangToEdit Existing slang key to edit
+     * @param slangNewName Replacement key, or null or blank to keep the current name
+     * @param newDefinitions Replacement meanings, or null to retain the current list
+     * @return The stored meanings after the edit, or null when the original key is absent
+     * @throws IllegalArgumentException If the new key belongs to another entry
+     */
+    public List<String> editSlang(String slangToEdit, String slangNewName,
+        List<String> newDefinitions) {
+        slangToEdit = slangToEdit.trim();
+
+        // Retrieve the current meanings for the key, if any.
+        List<String> currentDefinitions = dictionary.get(slangToEdit);
+
+        if (currentDefinitions == null) {
+            return null;
+        }
+
+        // Determine the final key and definitions to store
+        String finalName = (slangNewName == null) ? null : slangNewName.trim();
+        List<String> finalDefinitions = (newDefinitions == null) ? currentDefinitions : new ArrayList<>
+            (newDefinitions);
+
+        // Check for the validity of the new key before removing the old entry
+        if (finalName == null || finalName.isEmpty()) {
+            throw new IllegalArgumentException("Invalid slang \"" + finalName + "\" being provided.");
+
+        } else if (dictionary.containsKey(finalName)) {
+            throw new IllegalArgumentException("Slang \"" + finalName + "\" already exists.");
+        }
+
+        // Store the renamed or updated entry
+        dictionary.remove(slangToEdit);
+        dictionary.put(finalName, finalDefinitions);
+
+        return dictionary.get(finalName);
+    }
+
+    /**
+     * Deletes a slang entry.
+     * <p>
+     * Removes the trimmed, case-insensitive key and invalidates cached random
+     * keys. Does not change history or write the dictionary file by itself.
+     * </p>
+     *
+     * @param slang Slang key to delete
+     * @return True when an entry was removed, otherwise false
+     */
+    public boolean removeSlang(String slang) {
+        return dictionary.remove(slang.trim()) != null;
+    }
+
+    /**
+     * Restores dictionary entries from the original text file.
+     * <p>
+     * Replaces the in-memory map with freshly parsed source data and saves the
+     * restored dictionary. Existing search history is left intact.
+     * </p>
+     *
+     * @throws IOException If reading the source or saving the restored map fails
+     */
+    public void reset() throws IOException {
+        dictionary = SlangStorage.readOriginalFile(originalFile);
+        saveDictionary();
     }
 
     /**
