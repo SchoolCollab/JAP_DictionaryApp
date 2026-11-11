@@ -26,6 +26,8 @@ public class SlangDictionary {
     private final Random random = new Random();
 
 
+    /**------------ Methods ------------*/
+
     /**
      * Configures the files used by this dictionary.
      * <p>
