@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import Helper.SlangEntryParser;
+
 public class SlangStorage {
 
     /**
@@ -54,39 +56,30 @@ public class SlangStorage {
                     continue;
                 }
 
-                // Find the first backtick to separate the slang from its definitions.
-                int divider = currentLine.indexOf('`');
+                // Parse the slang entry
+                var entry = SlangEntryParser.parseSlangEntry(currentLine);
 
-                // Ignore lines without a backtick, as they cannot be parsed into a valid entry.
-                if (divider < 0) {
+                if (entry == null) {
                     continue;
                 }
 
                 // Get the slang key and the definitions
-                String slang = currentLine.substring(0, divider).trim();
-                String definitions = currentLine.substring(divider + 1).trim();
-
-                // Ignore empty slang key or definitions, as they do not form valid entries
-                if (slang.isEmpty() || definitions.isEmpty()) {
-                    continue;
-                }
+                String slang = entry.getKey();
+                List<String> definitions = entry.getValue();
 
                 // Get the existing list of definitions for this slang
-                List<String> definitionList = map.get(slang);
+                List<String> currentDefinitionList = map.get(slang);
 
                 // If the slang key is new, create a new list for its definitions
-                if (definitionList == null) {
-                    definitionList = new ArrayList<>();
-                    map.put(slang, definitionList);
+                if (currentDefinitionList == null) {
+                    currentDefinitionList = new ArrayList<>();
+                    map.put(slang, currentDefinitionList);
                 }
 
-                // Split the definitions by pipe and add them to the list
-                for (String definition : definitions.split("\\|")) {
-                    definition = definition.trim();
-
-                    // Only add non-empty definitions that are not already in the list
-                    if (!definition.isEmpty() && !definitionList.contains(definition)) {
-                        definitionList.add(definition);
+                // Check each definition and add it to the list if it's not already present
+                for (String definition : definitions) {
+                    if (!currentDefinitionList.contains(definition)) {
+                        currentDefinitionList.add(definition);
                     }
                 }
             }
