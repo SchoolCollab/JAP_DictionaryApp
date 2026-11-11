@@ -92,19 +92,16 @@ public class ConsoleIO {
      * @param definitions List of definitions to print
      */
     static public void outputDefinitions(List<String> definitions) {
-        boolean first = true;
-        String output = "Definition" + (definitions.size() > 1 ? "s" : "") + ":";
+        boolean plural = definitions.size() > 1;
+        String output = "Definition" + (plural ? "s" : "") + ":";
 
-        // Join the definitions with " - " as a separator.
+        // Append each definition with a leading dash for plural cases, or just space for singular.
         for (String definition : definitions) {
-            if (first) {
-                first = false;
-
-            } else {
-                output += " - ";
+            if (plural) {
+                output += "\n -";
             }
 
-            output += definition;
+            output += ' ' + definition;
         }
 
         System.out.println(output);
