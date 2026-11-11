@@ -82,7 +82,7 @@ public class DictionaryApp {
             System.out.println("5. Edit slang");
             System.out.println("6. Delete slang");
             System.out.println("7. Restore original list");
-            System.out.println("8. Slang of the day and random slang");
+            System.out.println("8. Slang of the day");
             System.out.println("9. Quiz: choose the meaning of a slang");
             System.out.println("10. Quiz: choose the slang by meaning");
             System.out.println("Press any other keys to exit.");
