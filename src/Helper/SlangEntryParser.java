@@ -57,6 +57,11 @@ public class SlangEntryParser {
     public static List<String> splitDefinitions(String definitions) {
         List<String> ds = new ArrayList<>();
 
+        // Return an empty list if the input is null or contains only whitespace
+        if (definitions == null || definitions.trim().isEmpty()) {
+            return ds;
+        }
+
         // Keep the first occurrence of each nonempty input definition.
         for (String definition : definitions.split("\\|")) {
             if (!definition.trim().isEmpty() && !ds.contains(definition.trim())) {
