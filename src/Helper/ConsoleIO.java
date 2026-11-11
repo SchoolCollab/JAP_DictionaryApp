@@ -8,7 +8,6 @@ import java.util.Scanner;
  */
 public class ConsoleIO {
 
-    /**------------ Fields ------------*/
     private static final Scanner scanner = new Scanner(System.in, "UTF-8");
 
 
