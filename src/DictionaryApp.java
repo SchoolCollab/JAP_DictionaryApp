@@ -5,6 +5,7 @@ import Data.Const;
 import Data.Const.WriteMode;
 
 import Module.SlangDictionary;
+import Module.SlangQuestion;
 
 import Helper.ConsoleIO;
 import Helper.TimeUtil;
@@ -12,8 +13,8 @@ import Helper.SlangEntryParser;
 
 public class DictionaryApp {
 
-    /**------------ Fields ------------*/
     private final SlangDictionary dictionary;
+    private final SlangQuestion slangQuestion;
 
 
     /**------------ Methods ------------*/
@@ -29,6 +30,7 @@ public class DictionaryApp {
      */
     public DictionaryApp(SlangDictionary dictionary) {
         this.dictionary = dictionary;
+        this.slangQuestion = new SlangQuestion(dictionary);
     }
 
     /**
@@ -119,12 +121,15 @@ public class DictionaryApp {
                         break;
 
                     case "8":
+                        getTodaySlang();
                         break;
 
                     case "9":
+                        slangQuiz();
                         break;
 
                     case "10":
+                        definitionQuiz();
                         break;
 
                     default:
@@ -395,5 +400,43 @@ public class DictionaryApp {
             dictionary.reset();
             System.out.println("Original dictionary restored. Number of slang entries: " + dictionary.count());
         }
+    }
+
+    /**
+     * Displays today's slang and optional additional random entries.
+     * <p>
+     * Starts with the date-based selection and its meanings.
+     * </p>
+     */
+    private void getTodaySlang() {
+        String todaySlang = dictionary.getTodaySlang();
+        System.out.println("Today slang is: " + todaySlang);
+        ConsoleIO.outputDefinitions(dictionary.getDefinitions(todaySlang));
+    }
+
+    /**
+     * Runs quizzes that ask for a slang key's meaning.
+     * <p>
+     * Generates one question at a time, checks the selected definition through
+     * the shared answer handler, and offers another round afterward.
+     * </p>
+     */
+    private void slangQuiz() {
+        do {
+            slangQuestion.buildSlangQuiz();
+        } while (ConsoleIO.question("Do you want to play again?"));
+    }
+
+    /**
+     * Runs quizzes that ask for the slang matching a definition.
+     * <p>
+     * Generates definition prompts with slang choices, delegates answer checking
+     * to the shared handler, and repeats only when the user requests another round.
+     * </p>
+     */
+    private void definitionQuiz() {
+        do {
+            slangQuestion.buildDefinitionQuiz();
+        } while (ConsoleIO.question("Do you want to play again?"));
     }
 }
