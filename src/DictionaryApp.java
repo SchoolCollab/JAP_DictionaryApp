@@ -333,7 +333,7 @@ public class DictionaryApp {
             updatedDefinitions = dictionary.editSlang(originalName, newName, newDefinitions);
 
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage() + ". Nothing changed.");
+            System.out.println(e.getMessage() + " Nothing changed.");
             return;
         }
 
