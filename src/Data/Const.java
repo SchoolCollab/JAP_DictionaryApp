@@ -6,6 +6,11 @@ package Data;
 public class Const {
 
     /**
+     * The maximum number of results to display at once.
+     */
+    public static final int DISPLAY_LIMIT = 20;
+
+    /**
      * Specifies how to write a slang dictionary file.
      * <p>
      * {@link #OVERWRITE} replaces any existing file, while {@link #APPEND} adds to it.
