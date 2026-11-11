@@ -2,12 +2,14 @@ package Module;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Random;
 
 import Data.Const.WriteMode;
 
@@ -19,6 +21,9 @@ public class SlangDictionary {
 
     private TreeMap<String, List<String>> dictionary;
     private LinkedList<String> history;
+
+    private String[] slangKeysCache;
+    private final Random random = new Random();
 
 
     /**
@@ -81,6 +86,9 @@ public class SlangDictionary {
         } else {
             history = new LinkedList<>();
         }
+
+        // Reset the cached array of slang keys
+        slangKeysCache = null;
     }
 
 
@@ -217,6 +225,9 @@ public class SlangDictionary {
             }
         }
 
+        // Invalidate the cached array of slang keys
+        slangKeysCache = null;
+
         return dictionary.get(slang);
     }
 
@@ -263,6 +274,9 @@ public class SlangDictionary {
         dictionary.remove(slangToEdit);
         dictionary.put(finalName, finalDefinitions);
 
+        // Invalidate the cached array of slang keys
+        slangKeysCache = null;
+
         return dictionary.get(finalName);
     }
 
@@ -277,7 +291,13 @@ public class SlangDictionary {
      * @return True when an entry was removed, otherwise false
      */
     public boolean removeSlang(String slang) {
-        return dictionary.remove(slang.trim()) != null;
+        boolean removed = dictionary.remove(slang.trim()) != null;
+
+        if (removed) {
+            slangKeysCache = null;
+        }
+
+        return removed;
     }
 
     /**
@@ -305,6 +325,7 @@ public class SlangDictionary {
      */
     public void saveDictionary() throws IOException {
         SlangStorage.write(dataFile, dictionary);
+        slangKeysCache = null;
     }
 
 
@@ -345,5 +366,55 @@ public class SlangDictionary {
      */
     public void clearHistory() {
         history.clear();
+    }
+
+
+    /**------------ Random selection methods ------------*/
+
+    /**
+     * Supplies the cached keys used for random selection.
+     * <p>
+     * Builds an array in map order only when the cache has been invalidated.
+     * Reuses that array until an editing or saving operation clears it again.
+     * </p>
+     *
+     * @return The current array of dictionary keys
+     */
+    private String[] getCachedKeys() {
+        if (slangKeysCache == null) {
+            slangKeysCache = dictionary.keySet().toArray(new String[0]);
+        }
+
+        return slangKeysCache;
+    }
+
+    /**
+     * Selects a random slang key.
+     * <p>
+     * Chooses an index from the cached key array using this dictionary's random
+     * generator. Requires at least one loaded entry and does not record history.
+     * </p>
+     *
+     * @return A randomly selected existing slang key
+     */
+    public String getRandomSlang() {
+        String[] keys = getCachedKeys();
+        return keys[random.nextInt(keys.length)];
+    }
+
+    /**
+     * Selects the slang key associated with the current day.
+     * <p>
+     * Seeds a local generator with the current date's epoch-day value. Repeated
+     * calls on the same day choose the same key while the ordered key set stays
+     * unchanged. Requires a nonempty dictionary.
+     * </p>
+     *
+     * @return Today's selected slang key
+     */
+    public String getTodaySlang() {
+        String[] keys = getCachedKeys();
+        Random todayRandom = new Random(LocalDate.now().toEpochDay());
+        return keys[todayRandom.nextInt(keys.length)];
     }
 }
