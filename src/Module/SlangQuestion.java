@@ -20,6 +20,11 @@ public class SlangQuestion {
 
     /**------------ Methods ------------*/
 
+    /**
+     * Constructs a new SlangQuestion instance with the specified slang dictionary.
+     *
+     * @param dictionary The slang dictionary to use for generating questions
+     */
     public SlangQuestion(SlangDictionary dictionary) {
         this.dictionary = dictionary;
     }
@@ -27,12 +32,25 @@ public class SlangQuestion {
     /**
      * Builds a quiz asking for the meaning of a slang key.
      * <p>
-     * Selects one correct meaning and samples distinct distractors from other
-     * entries. Excludes all meanings of the selected key, then shuffles the
-     * choices. Sampling stops at four choices or after 1,000 attempts.
+     * The question is created by {@link #createSlangQuestion()}.
+     * Then calls {@link #showQuiz()} to start the quiz.
      * </p>
      */
     public void buildSlangQuiz() {
+        showQuiz(createSlangQuestion());
+    }
+
+    /**
+     * Creates a question asking for the meaning of a slang key.
+     * <p>
+     * Selects one correct meaning and samples distinct distractors from other
+     * entries. Excludes all meanings of the selected key, then shuffles the
+     * choices. Sampling stops at four choices or after {@link Const#MAX_SAMPLING_TRIES} attempts.
+     * </p>
+     *
+     * @return a shuffled question ready to display
+     */
+    public Question createSlangQuestion() {
         // Select a random slang key and one of its definitions as the correct answer.
         String slang = dictionary.getRandomSlang();
         List<String> slangDefinitions = dictionary.getDefinitions(slang);
@@ -64,18 +82,31 @@ public class SlangQuestion {
 
         // Build the prompt and display the quiz with shuffled choices.
         String prompt = "What is the meaning of the slang key: \"" + slang + "\"?";
-        showQuiz(shuffle(prompt, choices, answer));
+        return shuffle(prompt, choices, answer);
     }
 
     /**
      * Builds a quiz asking for the slang key of a definition.
      * <p>
-     * Selects one definition and its matching slang key, then samples distinct
-     * keys that do not share that exact definition. Shuffles the result after
-     * reaching four choices or the 1,000-attempt limit.
+     * The question is created by {@link #createDefinitionQuestion()}.
+     * Then calls {@link #showQuiz()} to start the quiz.
      * </p>
      */
     public void buildDefinitionQuiz() {
+        showQuiz(createDefinitionQuestion());
+    }
+
+    /**
+     * Creates a question asking for the slang key of a definition.
+     * <p>
+     * Selects one definition and its matching slang key, then samples distinct
+     * keys that do not share that exact definition. Shuffles the result after
+     * reaching four choices or after {@link Const#MAX_SAMPLING_TRIES} attempts.
+     * </p>
+     *
+     * @return a shuffled question ready to display
+     */
+    public Question createDefinitionQuestion() {
         // Select a random slang key and one of its definitions as the prompt.
         String slang = dictionary.getRandomSlang();
         List<String> definitions = dictionary.getDefinitions(slang);
@@ -99,7 +130,7 @@ public class SlangQuestion {
 
         // Build the prompt and display the quiz with shuffled choices.
         String prompt = "Which slang key has the definition: \"" + answer + "\"?";
-        showQuiz(shuffle(prompt, choices, slang));
+        return shuffle(prompt, choices, slang);
     }
 
     /**
