@@ -106,4 +106,28 @@ public class ConsoleIO {
 
         System.out.println(output);
     }
+
+    /**
+     * Reads a yes-or-no confirmation.
+     * <p>
+     * Accepts y or n regardless of letter case and retries other input. Keeps the
+     * existing confirmation keys used for deletion, restoration, and quiz rounds.
+     * </p>
+     *
+     * @param question Question displayed before the confirmation choices
+     * @return True for y, or false for n
+     */
+    static public boolean question(String question) {
+        while (true) {
+            String s = input(question + " (y/n): ").trim().toLowerCase();
+
+            if (s.equals("y")) {
+                return true;
+            }
+
+            if (s.equals("n")) {
+                return false;
+            }
+        }
+    }
 }
