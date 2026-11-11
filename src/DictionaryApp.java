@@ -358,15 +358,15 @@ public class DictionaryApp {
      */
     private void removeSlang() throws IOException {
         String slang = ConsoleIO.nonemptyInput("Enter slang to delete: ");
+        String originalName = dictionary.getOriginalKey(slang);
 
         // Check if the slang exists in the dictionary before proceeding with the deletion.
-        if (!dictionary.hasSlang(slang)) {
+        if (!dictionary.hasSlang(originalName)) {
             System.out.println("Cannot find \"" + slang + "\".");
             return;
         }
 
         // Display the original key spelling and its current meanings for the user to review before confirming deletion.
-        String originalName = dictionary.getOriginalKey(slang);
         System.out.println("Slang: " + originalName);
         ConsoleIO.outputDefinitions(dictionary.getDefinitions(originalName));
 
