@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import Data.Const;
@@ -80,7 +81,7 @@ public class DictionaryApp {
             System.out.println("8. Slang of the day and random slang");
             System.out.println("9. Quiz: choose the meaning of a slang");
             System.out.println("10. Quiz: choose the slang by meaning");
-            System.out.println("0. Exit");
+            System.out.println("0 (Or any order keys). Exit");
 
             // Read the user's choice and dispatch the corresponding operation.
             String option = input("Choose an option: ");
@@ -117,11 +118,8 @@ public class DictionaryApp {
                     case "10":
                         break;
 
-                    case "0":
-                        return;
-
                     default:
-                        System.out.println("Invalid choice.");
+                        return; // Exit the loop and end the program
                 }
 
             } catch (IOException e) {
