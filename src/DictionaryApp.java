@@ -300,15 +300,15 @@ public class DictionaryApp {
      */
     private void editSlang() throws IOException {
         String slang = ConsoleIO.nonemptyInput("Enter slang that needs modification: ");
+        String originalName = dictionary.getOriginalKey(slang);
 
         // Check if the slang exists in the dictionary before proceeding with the edit.
-        if (!dictionary.hasSlang(slang)) {
+        if (!dictionary.hasSlang(originalName)) {
             System.out.println("Cannot find \"" + slang + "\".");
             return;
         }
 
         // Get the original key spelling and display its current meanings for the user to review.
-        String originalName = dictionary.getOriginalKey(slang);
         System.out.println("Current slang: " + originalName);
         ConsoleIO.outputDefinitions(dictionary.getDefinitions(originalName));
 
