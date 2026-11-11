@@ -111,6 +111,22 @@ public class SlangDictionary {
     }
 
     /**
+     * Finds the spelling stored for a slang key.
+     * <p>
+     * Resolves a case-insensitive match through the ordered map and returns its
+     * original key text. An absent key returns the caller's trimmed spelling.
+     * </p>
+     *
+     * @param slang Slang key whose stored spelling is requested
+     * @return The matching stored key, or the trimmed input when absent
+     */
+    public String getOriginalKey(String slang) {
+        slang = slang.trim();
+        Map.Entry<String, List<String>> e = dictionary.ceilingEntry(slang);
+        return (e != null && e.getKey().equalsIgnoreCase(slang)) ? e.getKey() : slang;
+    }
+
+    /**
      * Searches for an exact slang key and records the query.
      * <p>
      * Trims the input, adds it to the front of the history even when no match
