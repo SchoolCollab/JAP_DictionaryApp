@@ -183,7 +183,7 @@ public class DictionaryApp {
         List<String> definitions = dictionary.findSlangDefinitions(keyword);
 
         // Display the number of results found
-        System.out.printf("Number of results: %d", definitions.size());
+        System.out.printf("Number of results: %d%n", definitions.size());
 
         // Get the number of results to display, limited by the constant DISPLAY_LIMIT.
         int count = Math.min(definitions.size(), Const.DISPLAY_LIMIT);
