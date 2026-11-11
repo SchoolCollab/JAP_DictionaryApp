@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Utility class for handling console input.
+ * Utility methods for console input and output.
  */
-public class InputHelper {
+public class ConsoleIO {
 
     /**------------ Fields ------------*/
     private static final Scanner scanner = new Scanner(System.in, "UTF-8");
 
 
-    /**------------ Methods ------------*/
+    /**------------ Input Methods ------------*/
 
     /**
      * Displays a prompt and reads one console line.
@@ -77,5 +77,36 @@ public class InputHelper {
 
             System.out.println("Must enter at least one definition.");
         }
+    }
+
+
+    /**------------ Output Methods ------------*/
+
+    /**
+     * Prints a list of definitions in a single line.
+     * <p>
+     * Joins the definitions with " - " as a separator and prints them after a
+     * header indicating whether there is one or multiple definitions.
+     * </p>
+     *
+     * @param definitions List of definitions to print
+     */
+    static public void outputDefinitions(List<String> definitions) {
+        boolean first = true;
+        String output = "Definition" + (definitions.size() > 1 ? "s" : "") + ":";
+
+        // Join the definitions with " - " as a separator.
+        for (String definition : definitions) {
+            if (first) {
+                first = false;
+
+            } else {
+                output += " - ";
+            }
+
+            output += definition;
+        }
+
+        System.out.println(output);
     }
 }
