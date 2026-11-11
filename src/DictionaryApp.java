@@ -46,7 +46,7 @@ public class DictionaryApp {
             // Measure the time taken to load the dictionary.
             long start = System.nanoTime();
             dict.load();
-            long elapsed = System.nanoTime() - start;
+            double elapsed = TimeUtil.elapsedMillis(start);
 
             System.out.printf("Loaded %d slangs in %.1f ms.%n", dict.count(), elapsed);
 
