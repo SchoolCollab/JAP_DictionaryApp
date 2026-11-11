@@ -219,7 +219,7 @@ public class SlangDictionary {
      * Call saveHistory afterward when the cleared history should also be saved.
      * </p>
      */
-    public void deleteHistory() {
+    public void clearHistory() {
         history.clear();
     }
 }
