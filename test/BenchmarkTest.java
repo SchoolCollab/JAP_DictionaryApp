@@ -15,8 +15,9 @@ import Helper.TimeUtil;
 /**
  * Measures the core operations behind each main-menu option.
  * <p>
- * Uses the original slang text as input and saves benchmark changes in a
- * temporary directory, leaving the application's saved data untouched.
+ * Copies any existing saved dictionary and history into a temporary directory.
+ * Falls back to the original slang text when no saved dictionary exists, and
+ * leaves the application's saved data untouched.
  * Each option is run once, as in the startup timing in DictionaryApp.
  * </p>
  */
@@ -35,6 +36,17 @@ public class BenchmarkTest {
         Path historyFile = temporaryDirectory.resolve("history.dat");
 
         try {
+            Path savedData = source.resolveSibling("slang.dat");
+            Path savedHistory = source.resolveSibling("history.dat");
+
+            if (Files.isRegularFile(savedData)) {
+                Files.copy(savedData, dataFile);
+            }
+
+            if (Files.isRegularFile(savedHistory)) {
+                Files.copy(savedHistory, historyFile);
+            }
+
             SlangDictionary dictionary = new SlangDictionary(
                 source.toString(), dataFile.toString(), historyFile.toString());
 
