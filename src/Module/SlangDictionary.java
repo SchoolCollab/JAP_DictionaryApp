@@ -222,6 +222,10 @@ public class SlangDictionary {
      */
     public List<String> editSlang(String slangToEdit, String slangNewName,
         List<String> newDefinitions) {
+        if ((slangNewName == null || slangNewName.trim().isEmpty()) && newDefinitions == null) {
+            throw new IllegalArgumentException("No changes provided for the slang key.");
+        }
+
         slangToEdit = slangToEdit.trim();
 
         // Retrieve the current meanings for the key, if any.
@@ -232,15 +236,12 @@ public class SlangDictionary {
         }
 
         // Determine the final key and definitions to store
-        String finalName = (slangNewName == null) ? null : slangNewName.trim();
+        String finalName = (slangNewName == null) ? slangToEdit : slangNewName.trim();
         List<String> finalDefinitions = (newDefinitions == null) ? currentDefinitions : new ArrayList<>
             (newDefinitions);
 
-        // Check for the validity of the new key before removing the old entry
-        if (finalName == null || finalName.isEmpty()) {
-            throw new IllegalArgumentException("Invalid slang \"" + finalName + "\" being provided.");
-
-        } else if (dictionary.containsKey(finalName)) {
+        // Check if the new name is already used by another entry
+        if (!finalName.equalsIgnoreCase(slangToEdit) && dictionary.containsKey(finalName)) {
             throw new IllegalArgumentException("Slang \"" + finalName + "\" already exists.");
         }
 
