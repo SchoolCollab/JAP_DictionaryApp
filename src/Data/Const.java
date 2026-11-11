@@ -10,6 +10,12 @@ public class Const {
      */
     public static final int DISPLAY_LIMIT = 20;
 
+
+    /**
+     * The maximum number of tries for sampling distractors.
+     */
+    public static final int MAX_SAMPLING_TRIES = 1000;
+
     /**
      * Specifies how to write a slang dictionary file.
      * <p>
