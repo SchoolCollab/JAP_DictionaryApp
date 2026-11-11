@@ -1,1 +1,0 @@
-javac -sourcepath src -d out src/DictionaryApp.java
