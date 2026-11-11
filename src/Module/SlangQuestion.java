@@ -131,7 +131,7 @@ public class SlangQuestion {
      * @param question Question data containing choices and the correct zero-based index
      */
     private void showQuiz(Question question) {
-        System.out.println(question.prompt);
+        System.out.println("\n" + question.prompt);
 
         char[] labels = {'A', 'B', 'C', 'D'};
 
@@ -151,10 +151,10 @@ public class SlangQuestion {
 
         // Report the selected answer after a valid choice has been entered.
         if (selectionIndex == question.correctIndex) {
-            System.out.println("Your answer is correct!");
+            System.out.println("\nYour answer is correct!");
 
         } else {
-            System.out.println("Your answer is incorrect. The correct answer is: " +
+            System.out.println("\nYour answer is incorrect. The correct answer is: " +
                 labels[question.correctIndex]
                 + ". " + question.choices.get(question.correctIndex));
         }
