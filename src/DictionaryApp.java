@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.List;
 
 import Data.Const;
+import Data.Const.WriteMode;
 
 import Module.SlangDictionary;
 
@@ -101,15 +102,19 @@ public class DictionaryApp {
                         break;
 
                     case "4":
+                        addSlang();
                         break;
 
                     case "5":
+                        editSlang();
                         break;
 
                     case "6":
+                        removeSlang();
                         break;
 
                     case "7":
+                        reset();
                         break;
 
                     case "8":
@@ -236,6 +241,163 @@ public class DictionaryApp {
             dictionary.clearHistory();
             dictionary.saveHistory();
             System.out.println("Search history cleared.");
+        }
+    }
+
+    /**
+     * Adds a slang entry or supplies more meanings for an existing key.
+     * <p>
+     * Reads a nonempty key and at least one definition. Existing keys offer
+     * overwrite, append, or cancel choices. Saves a completed change and shows
+     * the resulting definition list.
+     * </p>
+     *
+     * @throws IOException If the updated dictionary cannot be saved
+     */
+    private void addSlang() throws IOException {
+        String slang = ConsoleIO.nonemptyInput("Enter slang that you want to add: ");
+        List<String> definitions =
+            ConsoleIO.inputDefinitions("Enter meanings, separated by \'|\'' if there are more than one: ");
+
+        // Default to overwriting existing meanings, but offer the user a choice when the slang already exists.
+        WriteMode mode = Const.WriteMode.OVERWRITE;
+
+        if (dictionary.hasSlang(slang)) {
+            // Warn the user that the slang already exists and show its current meanings.
+            System.out.println("Slang \'" + dictionary.getOriginalKey(slang) + "\' already exists.");
+            ConsoleIO.outputDefinitions(dictionary.getDefinitions(slang));
+            System.out.println("1. Overwrite existing meanings");
+            System.out.println("2. Append new meanings");
+            System.out.println("Press any other key to cancel.");
+
+            String option = ConsoleIO.input("Chon: ");
+
+            // Set the write mode based on the user's choice, or cancel if the input is invalid.
+            if (option.equals("1")) {
+                mode = Const.WriteMode.OVERWRITE;
+
+            } else if (option.equals("2")) {
+                mode = Const.WriteMode.APPEND;
+
+            } else {
+                return;
+            }
+        }
+
+        // Apply the chosen update and update the dictionary file
+        List<String> updatedDefinitions = dictionary.addSlang(slang, definitions, mode);
+        dictionary.saveDictionary();
+
+        // Display the final meanings for the slang after the operation.
+        System.out.println("Saved slang: " + dictionary.getOriginalKey(slang));
+        ConsoleIO.outputDefinitions(updatedDefinitions);
+    }
+
+    /**
+     * Edits an existing slang entry.
+     * <p>
+     * Displays its current meanings and accepts optional replacement key and
+     * definition text. Blank input preserves the corresponding value. Reports
+     * key conflicts without saving and persists a successful edit.
+     * </p>
+     *
+     * @throws IOException If the changed dictionary cannot be saved
+     */
+    private void editSlang() throws IOException {
+        String slang = ConsoleIO.nonemptyInput("Enter slang that needs modification: ");
+
+        // Check if the slang exists in the dictionary before proceeding with the edit.
+        if (!dictionary.hasSlang(slang)) {
+            System.out.println("Cannot find \"" + slang + "\".");
+            return;
+        }
+
+        // Get the original key spelling and display its current meanings for the user to review.
+        String originalName = dictionary.getOriginalKey(slang);
+        System.out.println("Current slang: " + originalName);
+        ConsoleIO.outputDefinitions(dictionary.getDefinitions(originalName));
+
+        // Prompt the user for new slang and meanings, allowing them to leave fields blank to retain current values.
+        String newName = ConsoleIO.input("Enter new slang, or leave blank to keep the current: ").trim();
+        List<String> newDefinitions =
+            ConsoleIO.inputDefinitions("Enter new meanings, separated by | if more than one, or leave blank to keep the current: ");
+
+
+        // If the user provides an empty list of definitions, treat it as a rename-only operation and retain the current meanings
+        if (newDefinitions != null && newDefinitions.isEmpty()) {
+            System.out.println("Invalid meanings, keeping the current ones.");
+            newDefinitions = null;
+        }
+
+        List<String> updatedDefinitions = null;
+
+        // Attempt to edit the slang entry, logging any errors
+        // and returning without saving if the operation fails due to invalid input or key conflicts.
+        try {
+            updatedDefinitions = dictionary.editSlang(originalName, newName, newDefinitions);
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage() + ". Nothing changed.");
+            return;
+        }
+
+        // Save the updated dictionary
+        dictionary.saveDictionary();
+
+        // Display the final slang name and its meanings after the edit operation.
+        String finalName = (newName == null || newName.isEmpty()) ? originalName : newName;
+        System.out.println("Slang modified from \"" + originalName + "\" to \"" + finalName + "\".");
+        ConsoleIO.outputDefinitions(updatedDefinitions);
+    }
+
+    /**
+     * Deletes a slang entry after confirmation.
+     * <p>
+     * Checks that the requested key exists, shows its meanings, and retains the
+     * original confirmation step before deleting and saving the dictionary.
+     * A negative answer leaves the entry unchanged.
+     * </p>
+     *
+     * @throws IOException If the dictionary cannot be saved after deletion
+     */
+    private void removeSlang() throws IOException {
+        String slang = ConsoleIO.nonemptyInput("Enter slang to delete: ");
+
+        // Check if the slang exists in the dictionary before proceeding with the deletion.
+        if (!dictionary.hasSlang(slang)) {
+            System.out.println("Cannot find \"" + slang + "\".");
+            return;
+        }
+
+        // Display the original key spelling and its current meanings for the user to review before confirming deletion.
+        String originalName = dictionary.getOriginalKey(slang);
+        System.out.println("Slang: " + originalName);
+        ConsoleIO.outputDefinitions(dictionary.getDefinitions(originalName));
+
+        // Keep deletion and its persisted result behind the existing prompt.
+        if (ConsoleIO.question("\nAre you sure you want to delete \"" + originalName + "\"?")) {
+            dictionary.removeSlang(originalName);
+            dictionary.saveDictionary();
+            System.out.println("Deleted.");
+
+        } else {
+            System.out.println("Cancelled.");
+        }
+    }
+
+    /**
+     * Restores the dictionary from its original source file.
+     * <p>
+     * Requests confirmation because existing dictionary edits will be replaced.
+     * Reloads and saves the source entries, then reports the restored key count.
+     * </p>
+     *
+     * @throws IOException If reading or saving the source dictionary fails
+     */
+    private void reset() throws IOException {
+        if (ConsoleIO.question("Are you sure you want to restore the original dictionary? All changes will be lost.")) {
+            dictionary.reset();
+            System.out.println("Original dictionary restored. Number of slang entries: " + dictionary.count());
         }
     }
 }
