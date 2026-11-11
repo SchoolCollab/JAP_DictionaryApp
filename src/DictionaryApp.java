@@ -81,10 +81,10 @@ public class DictionaryApp {
             System.out.println("8. Slang of the day and random slang");
             System.out.println("9. Quiz: choose the meaning of a slang");
             System.out.println("10. Quiz: choose the slang by meaning");
-            System.out.println("0 (Or any order keys). Exit");
+            System.out.println("Press any other keys to exit.");
 
             // Read the user's choice and dispatch the corresponding operation.
-            String option = ConsoleIO.input("Choose an option: ");
+            String option = ConsoleIO.input("\nChoose an option: ");
 
             try {
                 switch (option) {
