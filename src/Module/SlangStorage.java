@@ -1,10 +1,16 @@
 package Module;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import java.nio.charset.StandardCharsets;
 
@@ -87,5 +93,47 @@ public class SlangStorage {
         }
 
         return map;
+    }
+
+    /**
+     * Writes a serializable object to a file.
+     * <p>
+     * Opens a buffered object output stream, writes the complete supplied value,
+     * and closes the stream. Replaces the previous contents of the target file.
+     * </p>
+     *
+     * @param file Destination object file
+     * @param object Serializable dictionary or history value to save
+     * @throws IOException If opening, writing, or closing the file fails
+     */
+    public static void write(File file, Serializable object) throws IOException {
+        try
+            (ObjectOutputStream oos = new ObjectOutputStream(
+                new BufferedOutputStream(new FileOutputStream(file)))) {
+            oos.writeObject(object);
+        }
+    }
+
+    /**
+     * Reads a previously saved object from a file.
+     * <p>
+     * Opens a buffered object input stream and returns the deserialized value
+     * using the caller's expected type. The generic cast is unchecked, so callers
+     * must request a type that matches the file they previously saved.
+     * </p>
+     *
+     * @param <T> Expected type of the stored object
+     * @param file Existing serialized object file
+     * @return The deserialized object as the requested type
+     * @throws IOException If opening or reading the object file fails
+     * @throws ClassNotFoundException If a stored object's class cannot be resolved
+     */
+    @SuppressWarnings("unchecked") // This is to suppress the unchecked cast warning for the generic return type.
+    public static <T> T read(File file) throws IOException, ClassNotFoundException {
+        try
+            (ObjectInputStream ois = new ObjectInputStream(
+                new BufferedInputStream(new FileInputStream(file)))) {
+            return (T) ois.readObject();
+        }
     }
 }
