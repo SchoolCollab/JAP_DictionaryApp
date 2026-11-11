@@ -153,7 +153,7 @@ public class SlangDictionary {
      * @param keyword Keyword or phrase to find within definitions
      * @return A new list of matching slang keys
      */
-    public List<String> findByMeaning(String keyword) {
+    public List<String> findSlangDefinitions(String keyword) {
         keyword = keyword.trim().toLowerCase();
         List<String> results = new ArrayList<>();
 
