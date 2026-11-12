@@ -37,12 +37,12 @@ public class SlangStorage {
         // Create a case-insensitive map for the slang entries.
         TreeMap<String, List<String>> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-        // Read the source as UTF-8 while keeping continuation-line context.
+        // Read the source and parse each line to extract slang entries.
         try
             (BufferedReader br = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
 
-            // Read the first line to check for an optional BOM and the header.
+            // Read the first line to check for the header.
             String currentLine = br.readLine();
 
             // Make sure that the first line exists and is the expected header
