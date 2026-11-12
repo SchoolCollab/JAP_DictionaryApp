@@ -186,7 +186,7 @@ public class DictionaryApp {
         String keyword = ConsoleIO.nonemptyInput("Enter the keyword in the definition: ");
 
         // Find matching slang entries.
-        List<String> definitions = dictionary.findSlangDefinitions(keyword);
+        List<String> definitions = dictionary.findSlangsByDefinition(keyword);
 
         // Display the number of results found
         System.out.printf("Number of results: %d%n", definitions.size());
